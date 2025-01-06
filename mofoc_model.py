@@ -20,8 +20,8 @@ class GraphClassifierWithMetadata(torch.nn.Module):
         self.fc2 = torch.nn.Linear(hidden_dim, output_dim)
 
     def node_wise_normalization(self, x):
-        norm = torch.norm(x, p=2, dim=1, keepdim=True)  # Compute L2 norm for each node
-        norm = torch.clamp(norm, min=1e-6)  # Avoid division by zero
+        norm = torch.norm(x, p=2, dim=1, keepdim=True)  # compute L2 norm for each node
+        norm = torch.clamp(norm, min=1e-6)  # avoid division by zero
         return x / norm
 
     def forward(self, x, edge_index, edge_attr, batch, metadata):
@@ -71,7 +71,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 criterion = torch.nn.CrossEntropyLoss()
 
 
-# Training loop
+# training loop
 for epoch in range(30):
     model.train()
     total_loss = 0
@@ -96,6 +96,7 @@ model.eval()
 predictions = []
 labels = []
 ids = []
+probs = []
 
 with torch.no_grad():
     for data in all_loader:
@@ -104,6 +105,7 @@ with torch.no_grad():
         predictions.extend(pred.cpu().numpy())
         labels.extend(data.y[:, 0].long().cpu().numpy())
         ids.extend(data.y[:, 3:])
+        probs.extend(F.softmax(out))
 
 # Compute evaluation metrics
 conf_matrix = confusion_matrix(labels, predictions)
@@ -117,13 +119,18 @@ print("Classification Report:\n", report)
 
 gameids = [id[0].item() for id in ids]
 playids = [id[1].item() for id in ids]
+probclosed = [prob[0].item() for prob in probs]
+probopen = [prob[1].item() for prob in probs]
+probred = [prob[2].item() for prob in probs]
+
 
 data = {'gameId': gameids, 
         'playId': playids,
         'preds': predictions, 
-        'true': labels}
+        'true': labels, 
+        'closed_prob': probclosed,
+        'open_prob': probopen,
+        'red_prob': probred}
 
 mofoc_preds = pd.DataFrame(data)
-
-mofoc_preds.to_csv('mofoc_preds.csv')
 

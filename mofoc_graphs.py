@@ -87,22 +87,9 @@ graphs_dat = graphs_dat[graphs_dat['mof'].isin(keep_forms)]
 mof_to_id =  {label: idx for idx, label in enumerate(set(graphs_dat['mof']))}
 graphs_dat['mofID'] = graphs_dat['mof'].map(mof_to_id)
 
-print(mof_to_id)
-
 plays_dat = graphs_dat.iloc[:, np.r_[0:50, 96, 97, 98]].drop('Unnamed: 0.1', axis = 1).drop_duplicates(ignore_index=True)
 players_dat = graphs_dat.iloc[:, np.r_[1, 2, 52:98,]]
 
-#plays_dat.to_csv('plays_dat.csv')
-#players_dat.to_csv('players_dat.csv')
-
-# iterate through grouped player dat df to create graph for each play, use plays_dat after
-    # can imagine that iterating through plays_dat to find match to players_dat group id is quicker than iterating through all of player_dat to find all players on a given play
-    # otherwise, would # iterate through list of plays (plays_dat) and get matching player data (from players_dat) to create graph
-
-#one_play = graphs_dat.loc[(graphs_dat['gameId'] == 2022090800) & (graphs_dat['playId'] == 56)]
-#second_play = graphs_dat.loc[(graphs_dat['gameId'] == 2022090800) & (graphs_dat['playId'] == 1967)]
-#one_play.to_csv('buf_lar_220908_p1.csv')
-#second_play.to_csv('buf_lar_220908_p2.csv')
 
 # group df
 grouped = graphs_dat.groupby(['gameId', 'playId'])

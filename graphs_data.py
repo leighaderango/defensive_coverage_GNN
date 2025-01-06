@@ -27,8 +27,8 @@ def get_tracking_atsnap(weeks = range(1, 10)):
     return(tracking_at_snap)
 
 
-#tracking_at_snap = get_tracking_atsnap()
-tracking_at_snap = pd.read_csv('tracking_at_snap.csv')
+tracking_at_snap = get_tracking_atsnap()
+
 tracking_at_snap = pd.merge(passing_plays, tracking_at_snap, on = ['gameId', 'playId'], how = 'left')
     # keep only passing plays
 
@@ -49,5 +49,5 @@ players_at_snap = pd.merge(players_at_snap, player_play, on = ['gameId', 'playId
 players_at_snap['defender'] = np.where(players_at_snap['club'] == players_at_snap['defensiveTeam'], 1, 0)  
 
 
-players_at_snap.to_csv('players_at_snap.csv')
+#players_at_snap.to_csv('players_at_snap.csv')
 
